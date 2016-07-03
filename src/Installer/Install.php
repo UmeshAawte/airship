@@ -75,6 +75,7 @@ class Install
             $this->data['token'] = Base64::encode(
                 \random_bytes(33)
             );
+            $installerToken = $this->data['token'];
             \setcookie(
                 'installer',
                 $this->data['token'],
@@ -89,12 +90,15 @@ class Install
                     \time() + 8640000,
                     '/'
                 );
+                $installerToken = $_GET['token'];
             } else {
                 echo 'No installer authorization token found.', "\n";
                 exit(255);
             }
+        } else {
+            $installerToken = $_COOKIE['installer'];
         }
-        if (!\hash_equals($this->data['token'], $_COOKIE['installer'])) {
+        if (!\hash_equals($this->data['token'], $installerToken)) {
             // This effectively locks unauthorized users out of the system while installing
             echo 'Invalid installer authorization token.', "\n";
             exit(255);
