@@ -82,9 +82,19 @@ class Install
                 '/'
             );
         } elseif (empty($_COOKIE['installer'])) {
-            echo 'No installer authorization token found.', "\n";
-            exit(255);
-        } elseif (!\hash_equals($this->data['token'], $_COOKIE['installer'])) {
+            if (!empty($_GET['token']) && \is_string($_GET['token'])) {
+                \setcookie(
+                    'installer',
+                    $_GET['token'],
+                    \time() + 8640000,
+                    '/'
+                );
+            } else {
+                echo 'No installer authorization token found.', "\n";
+                exit(255);
+            }
+        }
+        if (!\hash_equals($this->data['token'], $_COOKIE['installer'])) {
             // This effectively locks unauthorized users out of the system while installing
             echo 'Invalid installer authorization token.', "\n";
             exit(255);
